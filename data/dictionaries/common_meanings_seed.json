@@ -1,0 +1,515 @@
+{
+  "aboard": {
+    "common_meaning": "在船上；在飞机上；上船，上飞机",
+    "senses": [
+      {
+        "meaning": "在飞船、飞机或船上",
+        "keywords": ["ship", "spacecraft", "capsule", "dragon", "station"]
+      }
+    ]
+  },
+  "agency": {
+    "common_meaning": "机构；代理处",
+    "senses": [
+      {
+        "meaning": "机构，官方组织",
+        "keywords": ["space", "nasa", "european", "program"]
+      }
+    ]
+  },
+  "automated": {
+    "common_meaning": "自动化的",
+    "senses": [
+      {
+        "meaning": "自动化的，无需人工直接操控的",
+        "keywords": ["rendezvous", "docking", "spacecraft"]
+      }
+    ]
+  },
+  "blast": {
+    "common_meaning": "爆炸；猛冲；发射",
+    "senses": [
+      {
+        "meaning": "发射，点火升空",
+        "keywords": ["off", "launch", "rocket", "station"]
+      }
+    ]
+  },
+  "booster": {
+    "common_meaning": "助推器；增强装置",
+    "senses": [
+      {
+        "meaning": "火箭助推器",
+        "keywords": ["falcon", "rocket", "stage", "launch"]
+      }
+    ]
+  },
+  "cargo": {
+    "common_meaning": "货物；货运",
+    "senses": [
+      {
+        "meaning": "货运物资，补给货物",
+        "keywords": ["ship", "dragon", "supplies", "equipment", "station"]
+      }
+    ]
+  },
+  "capsule": {
+    "common_meaning": "胶囊；太空舱",
+    "senses": [
+      {
+        "meaning": "太空舱",
+        "keywords": ["crew", "dragon", "spacex", "aboard"]
+      }
+    ]
+  },
+  "component": {
+    "common_meaning": "组成部分；部件",
+    "senses": [
+      {
+        "meaning": "部件，组件",
+        "keywords": ["hardware", "vehicle", "spacewalk", "equipment"]
+      }
+    ]
+  },
+  "critical": {
+    "common_meaning": "关键的；批判的；严重的",
+    "senses": [
+      {
+        "meaning": "关键的，至关重要的",
+        "keywords": ["stepping", "stone", "enable", "program"]
+      }
+    ]
+  },
+  "debut": {
+    "common_meaning": "首次亮相，首次登场",
+    "senses": [
+      {
+        "meaning": "首次发射或首次亮相",
+        "keywords": ["launch", "rocket", "since"]
+      }
+    ]
+  },
+  "deliver": {
+    "common_meaning": "递送；发表；接生",
+    "senses": [
+      {
+        "meaning": "运送，递送",
+        "keywords": ["cargo", "equipment", "supplies", "station"]
+      }
+    ]
+  },
+  "demonstration": {
+    "common_meaning": "示范；演示；证明",
+    "senses": [
+      {
+        "meaning": "技术演示，示范验证",
+        "keywords": ["technology", "experiments", "science"]
+      }
+    ]
+  },
+  "deputy": {
+    "common_meaning": "副职，副手",
+    "senses": [
+      {
+        "meaning": "副职的，副的",
+        "keywords": ["chief", "scientist", "program"]
+      }
+    ]
+  },
+  "dock": {
+    "common_meaning": "码头；对接；停靠",
+    "senses": [
+      {
+        "meaning": "对接，停靠到空间站",
+        "keywords": ["station", "spacecraft", "rendezvous", "module"]
+      }
+    ]
+  },
+  "enable": {
+    "common_meaning": "使能够；使成为可能",
+    "senses": [
+      {
+        "meaning": "使成为可能，促成",
+        "keywords": ["program", "exploration", "future", "help"]
+      }
+    ]
+  },
+  "endeavor": {
+    "common_meaning": "努力；事业；尝试",
+    "senses": [
+      {
+        "meaning": "事业，长期努力",
+        "keywords": ["global", "international", "station"]
+      }
+    ]
+  },
+  "equipment": {
+    "common_meaning": "设备，装备",
+    "senses": [
+      {
+        "meaning": "设备，器材",
+        "keywords": ["supplies", "hardware", "research", "cargo"]
+      }
+    ]
+  },
+  "essential": {
+    "common_meaning": "必需品；必要的",
+    "senses": [
+      {
+        "meaning": "必需品",
+        "keywords": ["food", "clothing", "crew", "supplies"]
+      }
+    ]
+  },
+  "expedition": {
+    "common_meaning": "远征；考察队；探险",
+    "senses": [
+      {
+        "meaning": "空间站长期任务组，远征任务",
+        "keywords": ["crew", "station", "soyuz", "iss"]
+      }
+    ]
+  },
+  "experiment": {
+    "common_meaning": "实验",
+    "senses": [
+      {
+        "meaning": "科学实验",
+        "keywords": ["science", "research", "technology", "station"]
+      }
+    ]
+  },
+  "exploration": {
+    "common_meaning": "探索；勘探",
+    "senses": [
+      {
+        "meaning": "太空探索，探索任务",
+        "keywords": ["lunar", "mars", "artemis", "missions"]
+      }
+    ]
+  },
+  "flight": {
+    "common_meaning": "飞行；航班",
+    "senses": [
+      {
+        "meaning": "飞行任务，发射飞行",
+        "keywords": ["launch", "rocket", "crew", "cargo"]
+      }
+    ]
+  },
+  "global": {
+    "common_meaning": "全球的；整体的",
+    "senses": [
+      {
+        "meaning": "全球性的，国际范围的",
+        "keywords": ["international", "countries", "world"]
+      }
+    ]
+  },
+  "hardware": {
+    "common_meaning": "硬件；设备",
+    "senses": [
+      {
+        "meaning": "硬件设备，实物设备",
+        "keywords": ["vehicle", "equipment", "spacewalk", "supplies"]
+      }
+    ]
+  },
+  "hatch": {
+    "common_meaning": "舱门；孵化",
+    "senses": [
+      {
+        "meaning": "舱门",
+        "keywords": ["opened", "spacecraft", "crew", "unloaded"]
+      }
+    ]
+  },
+  "investigation": {
+    "common_meaning": "调查；研究",
+    "senses": [
+      {
+        "meaning": "科学研究项目",
+        "keywords": ["science", "research", "experiments"]
+      }
+    ]
+  },
+  "launch": {
+    "common_meaning": "发射；推出；启动",
+    "senses": [
+      {
+        "meaning": "发射，升空",
+        "keywords": ["rocket", "falcon", "spacex", "cargo", "crew"]
+      }
+    ]
+  },
+  "lunar": {
+    "common_meaning": "月球的",
+    "senses": [
+      {
+        "meaning": "月球的",
+        "keywords": ["artemis", "exploration", "mars"]
+      }
+    ]
+  },
+  "major": {
+    "common_meaning": "主要的；重大的；专业",
+    "senses": [
+      {
+        "meaning": "重大的，主要的",
+        "keywords": ["milestone", "program", "next"]
+      }
+    ]
+  },
+  "material": {
+    "common_meaning": "材料；素材；物资",
+    "senses": [
+      {
+        "meaning": "材料，物资",
+        "keywords": ["samples", "research", "supplies", "gear"]
+      }
+    ]
+  },
+  "milestone": {
+    "common_meaning": "里程碑；重要节点",
+    "senses": [
+      {
+        "meaning": "里程碑，重要进展",
+        "keywords": ["first", "sixth", "program", "next"]
+      }
+    ]
+  },
+  "mission": {
+    "common_meaning": "任务；使命",
+    "senses": [
+      {
+        "meaning": "航天任务，执行任务",
+        "keywords": ["cargo", "crew", "station", "space"]
+      }
+    ]
+  },
+  "module": {
+    "common_meaning": "模块；舱段",
+    "senses": [
+      {
+        "meaning": "空间站舱段，模块",
+        "keywords": ["harmony", "station", "docking"]
+      }
+    ]
+  },
+  "operation": {
+    "common_meaning": "操作；运营；行动",
+    "senses": [
+      {
+        "meaning": "运营，任务管理",
+        "keywords": ["manager", "integration", "space", "station"]
+      }
+    ]
+  },
+  "orbit": {
+    "common_meaning": "轨道；绕轨道运行",
+    "senses": [
+      {
+        "meaning": "轨道，绕地飞行轨道",
+        "keywords": ["station", "rocket", "space", "launch"]
+      }
+    ]
+  },
+  "pilot": {
+    "common_meaning": "飞行员；驾驶",
+    "senses": [
+      {
+        "meaning": "飞行员，飞船驾驶员",
+        "keywords": ["crew", "commander", "astronaut"]
+      }
+    ]
+  },
+  "progress": {
+    "common_meaning": "进展；前进",
+    "senses": [
+      {
+        "meaning": "进步号货运飞船",
+        "keywords": ["russian", "cargo", "ship", "launch"]
+      }
+    ]
+  },
+  "purification": {
+    "common_meaning": "净化；提纯",
+    "senses": [
+      {
+        "meaning": "净化处理",
+        "keywords": ["water", "hardware", "space"]
+      }
+    ]
+  },
+  "recover": {
+    "common_meaning": "恢复；找回；回收",
+    "senses": [
+      {
+        "meaning": "回收，回收助推器",
+        "keywords": ["booster", "landing", "rocket", "successful"]
+      }
+    ]
+  },
+  "release": {
+    "common_meaning": "释放；发布；放开",
+    "senses": [
+      {
+        "meaning": "释放，分离放出",
+        "keywords": ["cargo", "dragon", "orbit", "stage"]
+      }
+    ]
+  },
+  "represent": {
+    "common_meaning": "代表；表示；体现",
+    "senses": [
+      {
+        "meaning": "代表，体现",
+        "keywords": ["work", "countries", "researchers"]
+      }
+    ]
+  },
+  "researcher": {
+    "common_meaning": "研究人员",
+    "senses": [
+      {
+        "meaning": "研究人员",
+        "keywords": ["science", "experiments", "countries"]
+      }
+    ]
+  },
+  "resume": {
+    "common_meaning": "重新开始；继续",
+    "senses": [
+      {
+        "meaning": "恢复，重新开始",
+        "keywords": ["flights", "rotation", "early"]
+      }
+    ]
+  },
+  "rotation": {
+    "common_meaning": "轮换；旋转",
+    "senses": [
+      {
+        "meaning": "人员轮换，任务轮换",
+        "keywords": ["crew", "flights", "resuming"]
+      }
+    ]
+  },
+  "sample": {
+    "common_meaning": "样本；样品",
+    "senses": [
+      {
+        "meaning": "样本，样品",
+        "keywords": ["research", "equipment", "science"]
+      }
+    ]
+  },
+  "schedule": {
+    "common_meaning": "安排；时间表；预定",
+    "senses": [
+      {
+        "meaning": "计划，预定安排",
+        "keywords": ["launch", "july", "expected"]
+      }
+    ]
+  },
+  "scientific": {
+    "common_meaning": "科学的",
+    "senses": [
+      {
+        "meaning": "科学的",
+        "keywords": ["breakthroughs", "research", "experiments"]
+      }
+    ]
+  },
+  "spacecraft": {
+    "common_meaning": "航天器，宇宙飞船",
+    "senses": [
+      {
+        "meaning": "航天器，飞船",
+        "keywords": ["dragon", "cargo", "station", "crew"]
+      }
+    ]
+  },
+  "spacewalk": {
+    "common_meaning": "太空行走，舱外活动",
+    "senses": [
+      {
+        "meaning": "太空行走，舱外活动",
+        "keywords": ["components", "hardware", "station"]
+      }
+    ]
+  },
+  "stage": {
+    "common_meaning": "阶段；舞台；火箭级",
+    "senses": [
+      {
+        "meaning": "火箭级，一级/二级火箭",
+        "keywords": ["rocket", "first", "second", "orbit"]
+      }
+    ]
+  },
+  "station": {
+    "common_meaning": "车站；站点；空间站",
+    "senses": [
+      {
+        "meaning": "空间站",
+        "keywords": ["space", "international", "iss", "orbit"]
+      }
+    ]
+  },
+  "successful": {
+    "common_meaning": "成功的",
+    "senses": [
+      {
+        "meaning": "成功的",
+        "keywords": ["recovery", "launch", "booster"]
+      }
+    ]
+  },
+  "supply": {
+    "common_meaning": "供应；补给品",
+    "senses": [
+      {
+        "meaning": "补给品，物资",
+        "keywords": ["cargo", "equipment", "crew", "food"]
+      }
+    ]
+  },
+  "technology": {
+    "common_meaning": "技术",
+    "senses": [
+      {
+        "meaning": "技术，科技",
+        "keywords": ["demonstrations", "experiments", "science"]
+      }
+    ]
+  },
+  "touchdown": {
+    "common_meaning": "着陆；触地",
+    "senses": [
+      {
+        "meaning": "着陆，落地",
+        "keywords": ["landing", "pad", "booster", "rocket"]
+      }
+    ]
+  },
+  "unload": {
+    "common_meaning": "卸下，卸载",
+    "senses": [
+      {
+        "meaning": "卸下货物，卸载补给",
+        "keywords": ["spacecraft", "crew", "cargo", "hatches"]
+      }
+    ]
+  },
+  "vehicle": {
+    "common_meaning": "车辆；运载工具",
+    "senses": [
+      {
+        "meaning": "航天运载器，飞行器",
+        "keywords": ["hardware", "spacecraft", "cargo"]
+      }
+    ]
+  }
+}

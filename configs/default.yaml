@@ -1,0 +1,35 @@
+# Shared runtime configuration for CLI scripts.
+
+input_path: input_texts/test_text.txt
+
+database:
+  path: data/words_mvp_v2.sqlite3
+
+meaning:
+  dictionary_type: ecdict
+  dictionary: data/dictionaries/ecdict_sample.csv
+  deepseek:
+    enabled: true
+    model: deepseek-v4-flash
+    base_url: https://api.deepseek.com
+    api_key_env: DEEPSEEK_API_KEY
+    timeout_seconds: 30
+    max_tokens: 400
+
+mvp:
+  json: false
+  persist: true
+  user_id: default
+
+preprocess:
+  json: false
+  limit: 30
+
+extract_candidates:
+  json: false
+  limit: 30
+  min_score: 0.0
+  basic_wordlist: data/wordlists/basic_seed.txt
+  target_wordlist: data/wordlists/target_cet_academic_seed.txt
+  known_words: []
+  ignored_words: []

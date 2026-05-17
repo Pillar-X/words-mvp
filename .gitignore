@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Runtime databases and generated outputs
+*.sqlite
+*.sqlite3
+*.db
+preprocess_result.json
+candidates_result.json
+mvp_result.json
+
+# Local raw input files
+input_texts/*
+!input_texts/.gitkeep
+
+# Local secrets and environment files
+.env
+.env.*
+*.local
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Codex/agent local metadata
+.agents/
+.codex/
