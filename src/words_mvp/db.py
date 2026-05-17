@@ -15,6 +15,14 @@ DEFAULT_DB_PATH = PROJECT_ROOT / "data" / "words_mvp_v2.sqlite3"
 VALID_STATUSES = {"learning", "known", "ignored", "archived"}
 STATUS_ALIASES = {"in_book": "learning"}
 USER_ID = "default"
+CLEARABLE_TABLES = (
+    "user_sense_events",
+    "user_sense_states",
+    "text_occurrences",
+    "word_senses",
+    "lexemes",
+    "documents",
+)
 
 
 def connect_db(path: str | Path | None = None) -> sqlite3.Connection:
@@ -122,6 +130,19 @@ def init_db(connection: sqlite3.Connection) -> None:
         """
     )
     connection.commit()
+
+
+def clear_database(connection: sqlite3.Connection) -> dict[str, int]:
+    """Delete all runtime vocabulary data while keeping the schema in place."""
+    deleted_counts: dict[str, int] = {}
+    for table in CLEARABLE_TABLES:
+        cursor = connection.execute(f"DELETE FROM {table}")
+        deleted_counts[table] = max(int(cursor.rowcount), 0)
+
+    placeholders = ", ".join("?" for _ in CLEARABLE_TABLES)
+    connection.execute(f"DELETE FROM sqlite_sequence WHERE name IN ({placeholders})", CLEARABLE_TABLES)
+    connection.commit()
+    return deleted_counts
 
 
 def save_document(connection: sqlite3.Connection, document: PreprocessedDocument) -> int:
@@ -367,6 +388,72 @@ def fetch_sense(connection: sqlite3.Connection, sense_id: int) -> sqlite3.Row | 
 
 def fetch_occurrence(connection: sqlite3.Connection, occurrence_id: int) -> sqlite3.Row | None:
     return connection.execute("SELECT * FROM text_occurrences WHERE id = ?", (occurrence_id,)).fetchone()
+
+
+def fetch_learning_senses(connection: sqlite3.Connection, *, user_id: str = USER_ID) -> list[sqlite3.Row]:
+    return connection.execute(
+        """
+        SELECT
+            user_sense_states.sense_id,
+            user_sense_states.status,
+            user_sense_states.mastery_level,
+            user_sense_states.last_action_at,
+            user_sense_states.created_at,
+            lexemes.lemma,
+            lexemes.frequency_rank,
+            word_senses.meaning_zh,
+            word_senses.definition_en,
+            word_senses.pos,
+            text_occurrences.surface,
+            text_occurrences.sentence,
+            text_occurrences.context,
+            documents.filename
+        FROM user_sense_states
+        JOIN word_senses ON word_senses.id = user_sense_states.sense_id
+        JOIN lexemes ON lexemes.id = word_senses.lexeme_id
+        LEFT JOIN text_occurrences ON text_occurrences.id = user_sense_states.source_occurrence_id
+        LEFT JOIN documents ON documents.id = user_sense_states.source_document_id
+        WHERE user_sense_states.user_id = ? AND user_sense_states.status = 'learning'
+        ORDER BY user_sense_states.last_action_at DESC, user_sense_states.id DESC
+        """,
+        (user_id,),
+    ).fetchall()
+
+
+def fetch_word_card(connection: sqlite3.Connection, sense_id: int, *, user_id: str = USER_ID) -> sqlite3.Row | None:
+    return connection.execute(
+        """
+        SELECT
+            user_sense_states.sense_id,
+            user_sense_states.status,
+            user_sense_states.mastery_level,
+            user_sense_states.last_seen_at,
+            user_sense_states.last_action_at,
+            user_sense_states.created_at AS added_at,
+            lexemes.lemma,
+            lexemes.frequency_rank,
+            lexemes.frequency_score,
+            lexemes.frequency_source,
+            word_senses.sense_key,
+            word_senses.meaning_zh,
+            word_senses.definition_en,
+            word_senses.pos,
+            word_senses.source,
+            word_senses.source_sense_id,
+            word_senses.sense_rank,
+            text_occurrences.surface,
+            text_occurrences.sentence,
+            text_occurrences.context,
+            documents.filename
+        FROM user_sense_states
+        JOIN word_senses ON word_senses.id = user_sense_states.sense_id
+        JOIN lexemes ON lexemes.id = word_senses.lexeme_id
+        LEFT JOIN text_occurrences ON text_occurrences.id = user_sense_states.source_occurrence_id
+        LEFT JOIN documents ON documents.id = user_sense_states.source_document_id
+        WHERE user_sense_states.user_id = ? AND user_sense_states.sense_id = ?
+        """,
+        (user_id, sense_id),
+    ).fetchone()
 
 
 def _mastery_level_for_status(status: str) -> int:

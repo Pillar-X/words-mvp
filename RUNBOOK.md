@@ -22,11 +22,31 @@ conda run -n words-mvp python -m pip install -r requirements.txt
 conda run -n words-mvp python -m spacy download en_core_web_sm
 ```
 
+下载 WordNet 语料：
+
+```bash
+conda run -n words-mvp python -m nltk.downloader -d data/nltk_data wordnet omw-1.4
+```
+
 ## 3. 运行 MVP 闭环
 
 待抽词的原始 `.txt` 文件放在 `input_texts/` 目录，并在 `configs/default.yaml` 里设置 `input_path`。
 
 如需启用 DeepSeek V4 Flash 进行上下文义项选择，先设置 `DEEPSEEK_API_KEY`。
+
+启动本地前端：
+
+```bash
+conda run -n words-mvp uvicorn web.app:app --host 127.0.0.1 --port 8000
+```
+
+然后打开：
+
+```text
+http://127.0.0.1:8000
+```
+
+也可以只运行命令行闭环：
 
 ```bash
 python scripts/run_mvp.py --config configs/default.yaml

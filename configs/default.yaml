@@ -7,7 +7,7 @@ database:
 
 meaning:
   dictionary_type: ecdict
-  dictionary: data/dictionaries/ecdict_sample.csv
+  dictionary: data/dictionaries/ecdict.csv
   deepseek:
     enabled: true
     model: deepseek-v4-flash
@@ -20,6 +20,12 @@ mvp:
   json: false
   persist: true
   user_id: default
+
+web:
+  host: 127.0.0.1
+  port: 8000
+  debug: false
+  upload_dir: input_texts
 
 preprocess:
   json: false

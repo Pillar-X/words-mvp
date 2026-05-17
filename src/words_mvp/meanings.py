@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+from functools import lru_cache
 from pathlib import Path
 import csv
 import hashlib
@@ -18,6 +19,7 @@ from words_mvp.vocabulary import WordCandidate
 
 
 DEFAULT_ECDICT_PATH = PROJECT_ROOT / "data" / "dictionaries" / "ecdict_sample.csv"
+NLTK_DATA_DIR = PROJECT_ROOT / "data" / "nltk_data"
 WORD_RE = re.compile(r"[a-z]+")
 POS_RE = re.compile(r"^([a-zA-Z][a-zA-Z. /-]*?)\s*[.:：]\s*(.+)$")
 
@@ -41,6 +43,7 @@ class LexemeDictionaryEntry:
     lemma: str
     phonetic: str
     pos: str
+    exchange: str
     frequency_rank: int | None
     frequency_score: float | None
     frequency_source: str
@@ -88,9 +91,13 @@ def load_meaning_dictionary(path: str | Path | None = None) -> dict[str, LexemeD
         return {}
     if dictionary_path.suffix.lower() != ".csv":
         raise ValueError(f"ECDICT CSV is required for meaning lookup: {dictionary_path}")
+    return _load_meaning_dictionary_cached(str(dictionary_path))
 
+
+@lru_cache(maxsize=4)
+def _load_meaning_dictionary_cached(dictionary_path: str) -> dict[str, LexemeDictionaryEntry]:
     entries: dict[str, LexemeDictionaryEntry] = {}
-    with dictionary_path.open("r", encoding="utf-8-sig", newline="") as file:
+    with Path(dictionary_path).open("r", encoding="utf-8-sig", newline="") as file:
         reader = csv.DictReader(file)
         for row in reader:
             lemma = str(row.get("word", "")).strip().lower()
@@ -101,6 +108,7 @@ def load_meaning_dictionary(path: str | Path | None = None) -> dict[str, LexemeD
                 lemma=lemma,
                 phonetic=str(row.get("phonetic", "") or ""),
                 pos=str(row.get("pos", "") or ""),
+                exchange=str(row.get("exchange", "") or ""),
                 frequency_rank=_ecdict_frequency_rank(row),
                 frequency_score=_float_or_none(row.get("collins")),
                 frequency_source=_ecdict_frequency_source(row),
@@ -129,7 +137,8 @@ def resolve_candidate_meaning(
 ) -> MeaningResult:
     """Resolve a candidate's meaning by selecting from ECDICT senses."""
     context = get_candidate_context(document, candidate)
-    entry = dictionary.get(candidate.lemma)
+    surface = candidate.word.strip().lower()
+    entry = dictionary.get(surface) or dictionary.get(candidate.lemma)
     if entry and entry.senses:
         selected_sense, confidence, evidence, method = _select_sense(
             candidate=candidate,
@@ -173,6 +182,43 @@ def resolve_candidate_meaning(
         sense_rank=unknown.sense_rank,
         selection_method="missing_ecdict_entry",
     )
+
+
+def build_related_forms(
+    dictionary: dict[str, LexemeDictionaryEntry],
+    *,
+    lemma: str,
+    surface: str,
+    selected_sense_key: str,
+    limit: int = 16,
+) -> list[dict]:
+    """Build display-ready ECDICT entries related to a lemma or surface form."""
+    normalized_lemma = lemma.strip().lower()
+    normalized_surface = surface.strip().lower()
+    candidate_words = _related_form_candidates(dictionary, normalized_lemma, normalized_surface, limit=limit)
+    forms = []
+    for word in candidate_words:
+        entry = dictionary.get(word)
+        if entry is None:
+            continue
+        forms.append(
+            {
+                "word": entry.lemma,
+                "phonetic": entry.phonetic,
+                "pos": entry.pos,
+                "frequency_rank": entry.frequency_rank,
+                "meanings": [
+                    {
+                        "text": sense.meaning_zh,
+                        "pos": sense.pos,
+                        "definition_en": sense.definition_en,
+                        "selected": sense.sense_key == selected_sense_key,
+                    }
+                    for sense in entry.senses
+                ],
+            }
+        )
+    return forms
 
 
 def get_candidate_context(document: PreprocessedDocument, candidate: WordCandidate) -> str:
@@ -227,6 +273,207 @@ def _parse_translation_line(value: str, fallback_pos: str) -> tuple[str, str]:
 def _split_translation_meanings(value: str) -> list[str]:
     parts = [part.strip() for part in re.split(r"[;；]", value) if part.strip()]
     return parts or [value.strip()]
+
+
+def _related_form_candidates(
+    dictionary: dict[str, LexemeDictionaryEntry],
+    lemma: str,
+    surface: str,
+    *,
+    limit: int,
+) -> list[str]:
+    ordered: list[str] = []
+    seen: set[str] = set()
+
+    def add(word: str) -> None:
+        normalized = word.strip().lower()
+        if not normalized or normalized in seen or normalized not in dictionary:
+            return
+        seen.add(normalized)
+        ordered.append(normalized)
+
+    add(lemma)
+    add(surface)
+
+    query_words = _dedupe_words([lemma, surface])
+    _add_exchange_forms(dictionary, ordered, add, query_words=query_words)
+
+    for word in _dedupe_words(query_words + ordered):
+        for related in _wordnet_related_words(word):
+            add(related)
+        for related in _heuristic_derivation_candidates(word):
+            add(related)
+    _add_exchange_forms(dictionary, ordered, add, query_words=query_words)
+
+    stems = _derivation_stems(lemma)
+    scored: list[tuple[int, int, str]] = []
+    for word in dictionary:
+        if word in seen:
+            continue
+        score = _related_word_score(word, lemma=lemma, surface=surface, stems=stems)
+        if score <= 0:
+            continue
+        frequency_rank = dictionary[word].frequency_rank or 9999999
+        scored.append((-score, frequency_rank, word))
+
+    for _, _, word in sorted(scored)[: max(0, limit - len(ordered))]:
+        add(word)
+
+    return ordered[:limit]
+
+
+def _add_exchange_forms(
+    dictionary: dict[str, LexemeDictionaryEntry],
+    ordered: list[str],
+    add,
+    *,
+    query_words: list[str],
+) -> None:
+    processed: set[str] = set()
+    while True:
+        added_count = len(ordered)
+        for word in list(ordered):
+            if word in processed:
+                continue
+            processed.add(word)
+            entry = dictionary.get(word)
+            if entry is None:
+                continue
+            query_words.append(word)
+            for exchanged in _parse_exchange_words(entry.exchange):
+                add(exchanged)
+        if len(ordered) == added_count:
+            return
+
+
+def _dedupe_words(words: list[str]) -> list[str]:
+    ordered: list[str] = []
+    seen: set[str] = set()
+    for word in words:
+        normalized = word.strip().lower()
+        if not normalized or normalized in seen:
+            continue
+        seen.add(normalized)
+        ordered.append(normalized)
+    return ordered
+
+
+def _parse_exchange_words(value: str) -> list[str]:
+    words: list[str] = []
+    for part in re.split(r"[/,;\s]+", value):
+        if ":" not in part:
+            continue
+        _, raw_words = part.split(":", 1)
+        for word in raw_words.split(","):
+            normalized = word.strip().lower()
+            if WORD_RE.fullmatch(normalized):
+                words.append(normalized)
+    return words
+
+
+@lru_cache(maxsize=4096)
+def _wordnet_related_words(word: str) -> tuple[str, ...]:
+    normalized = word.strip().lower()
+    if not WORD_RE.fullmatch(normalized):
+        return ()
+
+    try:
+        import nltk.data
+        from nltk.corpus import wordnet as wn
+    except ImportError:
+        return ()
+
+    nltk_data_dir = str(NLTK_DATA_DIR)
+    if nltk_data_dir not in nltk.data.path:
+        nltk.data.path.insert(0, nltk_data_dir)
+
+    related: set[str] = set()
+    try:
+        seeds = {normalized}
+        for pos in (wn.NOUN, wn.VERB, wn.ADJ, wn.ADV):
+            morphy = wn.morphy(normalized, pos)
+            if morphy:
+                seeds.add(morphy.lower())
+
+        for seed in seeds:
+            lemmas = []
+            for pos in (wn.NOUN, wn.VERB, wn.ADJ, wn.ADV):
+                lemmas.extend(wn.lemmas(seed, pos=pos))
+            for synset in wn.synsets(seed):
+                lemmas.extend(synset.lemmas())
+
+            for lemma in lemmas:
+                _add_wordnet_name(related, lemma.name())
+                for derived in lemma.derivationally_related_forms():
+                    _add_wordnet_name(related, derived.name())
+    except (LookupError, OSError):
+        return ()
+
+    related.discard(normalized)
+    return tuple(sorted(related))
+
+
+def _add_wordnet_name(words: set[str], name: str) -> None:
+    normalized = name.replace("_", " ").strip().lower()
+    if " " in normalized:
+        return
+    if WORD_RE.fullmatch(normalized):
+        words.add(normalized)
+
+
+def _heuristic_derivation_candidates(word: str) -> list[str]:
+    candidates: list[str] = []
+    if word.endswith("ification") and len(word) > len("ification"):
+        candidates.append(f"{word[: -len('ification')]}ify")
+    if word.endswith("ication") and len(word) > len("ication"):
+        candidates.append(f"{word[: -len('ication')]}icate")
+    return candidates
+
+
+def _derivation_stems(lemma: str) -> set[str]:
+    stems = {lemma}
+    if len(lemma) > 4 and lemma.endswith("e"):
+        stems.add(lemma[:-1])
+    if len(lemma) > 5 and lemma.endswith("al"):
+        stems.add(lemma[:-2])
+    if len(lemma) > 5 and lemma.endswith("y"):
+        stems.add(f"{lemma[:-1]}i")
+    return {stem for stem in stems if len(stem) >= 4}
+
+
+def _related_word_score(word: str, *, lemma: str, surface: str, stems: set[str]) -> int:
+    if word == lemma or word == surface:
+        return 100
+    suffixes = (
+        "s",
+        "es",
+        "ed",
+        "ing",
+        "er",
+        "ers",
+        "ion",
+        "tion",
+        "ation",
+        "ment",
+        "ness",
+        "ity",
+        "al",
+        "ial",
+        "able",
+        "ible",
+        "ive",
+        "ly",
+        "ally",
+    )
+    for stem in stems:
+        if not word.startswith(stem):
+            continue
+        tail = word[len(stem) :]
+        if tail in suffixes:
+            return 80 - abs(len(word) - len(lemma))
+        if 0 < len(tail) <= 8 and any(tail.endswith(suffix) for suffix in suffixes):
+            return 55 - abs(len(word) - len(lemma))
+    return 0
 
 
 def _sense_key(word: str, pos: str, meaning: str, rank: int) -> str:

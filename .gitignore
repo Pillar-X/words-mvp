@@ -20,6 +20,10 @@ env/
 *.sqlite
 *.sqlite3
 *.db
+data/nltk_data/
+data/dictionaries/ecdict.csv
+data/dictionaries/ecdict*.zip
+data/dictionaries/ecdict*.7z
 preprocess_result.json
 candidates_result.json
 mvp_result.json
@@ -36,6 +40,7 @@ input_texts/*
 # OS/editor noise
 .DS_Store
 Thumbs.db
+*:Zone.Identifier
 .vscode/
 .idea/
 

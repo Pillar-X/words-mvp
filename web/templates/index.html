@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Words MVP</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/styles.css') }}">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <h1>Words MVP</h1>
+          <div class="meta-line">
+            <span id="db-path">{{ database_path }}</span>
+            <span class="dot"></span>
+            <span id="deepseek-state"
+              data-enabled="{{ 'true' if deepseek.enabled else 'false' }}"
+              data-key-set="{{ 'true' if deepseek.api_key_set else 'false' }}">
+              {{ deepseek.model }} /
+              {% if deepseek.enabled and deepseek.api_key_set %}DeepSeek{% else %}fallback{% endif %}
+            </span>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="ghost-button" id="refresh-summary" type="button">刷新统计</button>
+          <button class="danger-button" id="clear-database" type="button">清空数据库</button>
+        </div>
+      </header>
+
+      <nav class="view-tabs" aria-label="主视图">
+        <button class="tab-button active" type="button" data-view="extract">抽词</button>
+        <button class="tab-button" type="button" data-view="vocabulary">生词本</button>
+      </nav>
+
+      <section class="summary-strip" id="summary-strip">
+        <div><span id="candidate-count">0</span><small>候选</small></div>
+        <div><span id="document-count">0</span><small>文档</small></div>
+        <div><span id="sense-count">0</span><small>义项</small></div>
+        <div><span id="learning-count">0</span><small>学习中</small></div>
+        <div><span id="known-count">0</span><small>已知道</small></div>
+        <div><span id="ignored-count">0</span><small>已忽视</small></div>
+      </section>
+
+      <section class="notice" id="notice" hidden></section>
+
+      <section class="view-panel" id="extract-view">
+        <section class="control-band">
+          <form id="extract-form" class="control-grid">
+            <label>
+              <span>文本</span>
+              <select id="input-path" name="input_path">
+                {% for file in files %}
+                <option value="{{ file.path }}" {% if file.path == default_input_path %}selected{% endif %}>
+                  {{ file.name }}
+                </option>
+                {% endfor %}
+              </select>
+            </label>
+            <label>
+              <span>数量</span>
+              <input id="limit" name="limit" type="number" min="1" max="200" value="{{ default_limit }}">
+            </label>
+            <label>
+              <span>最低分</span>
+              <input id="min-score" name="min_score" type="number" step="0.1" value="{{ default_min_score }}">
+            </label>
+            <label class="check-line">
+              <input id="persist" name="persist" type="checkbox" checked>
+              <span>写入数据库</span>
+            </label>
+            <button class="primary-button" id="extract-button" type="submit">运行抽取</button>
+          </form>
+
+          <form id="upload-form" class="upload-line">
+            <input id="upload-file" name="file" type="file" accept=".txt">
+            <button class="secondary-button" type="submit">上传文本</button>
+          </form>
+        </section>
+
+        <section class="candidate-list" id="candidate-list" aria-live="polite"></section>
+      </section>
+
+      <section class="view-panel" id="vocabulary-view" hidden>
+        <div class="section-head">
+          <div>
+            <h2>生词本</h2>
+            <p>按加入时间倒序排列</p>
+          </div>
+          <button class="ghost-button" id="reload-vocabulary" type="button">刷新生词本</button>
+        </div>
+        <section class="wordbook-list" id="wordbook-list" aria-live="polite"></section>
+      </section>
+
+      <section class="view-panel" id="word-card-view" hidden>
+        <button class="ghost-button back-button" id="back-to-vocabulary" type="button">返回生词本</button>
+        <article class="word-card">
+          <div class="word-card-head">
+            <div>
+              <h2 id="card-word"></h2>
+              <div class="candidate-sub" id="card-sub"></div>
+            </div>
+            <div class="status-pill" id="card-status"></div>
+          </div>
+          <div class="card-meaning" id="card-meaning"></div>
+          <div class="definition" id="card-definition"></div>
+          <p class="sentence" id="card-sentence"></p>
+          <details>
+            <summary>上下文</summary>
+            <p class="context" id="card-context"></p>
+          </details>
+          <h3>其它形式</h3>
+          <section class="form-list" id="form-list"></section>
+        </article>
+      </section>
+    </main>
+
+    <template id="candidate-template">
+      <article class="candidate">
+        <div class="candidate-main">
+          <div class="candidate-head">
+            <div>
+              <h2 class="candidate-word"></h2>
+              <div class="candidate-sub"></div>
+            </div>
+            <div class="score-box">
+              <strong class="score"></strong>
+              <span>score</span>
+            </div>
+          </div>
+          <div class="meaning"></div>
+          <div class="definition"></div>
+          <p class="sentence"></p>
+          <details>
+            <summary>上下文</summary>
+            <p class="context"></p>
+          </details>
+        </div>
+        <div class="candidate-side">
+          <dl>
+            <div><dt>freq</dt><dd class="frequency"></dd></div>
+            <div><dt>sense</dt><dd class="sense-id"></dd></div>
+            <div><dt>occ</dt><dd class="occurrence-id"></dd></div>
+            <div><dt>method</dt><dd class="method"></dd></div>
+          </dl>
+          <div class="actions">
+            <button type="button" data-status="learning">加入生词本</button>
+            <button type="button" data-status="known">已知道</button>
+            <button type="button" data-status="ignored">忽视</button>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <script src="{{ url_for('static', path='/app.js') }}"></script>
+  </body>
+</html>

@@ -1,5 +1,8 @@
 word,phonetic,definition,translation,pos,collins,oxford,tag,bnc,frq,exchange,detail,audio
 purification,,the act of removing dirty or harmful substances,净化；提纯,n,1,0,cet6,12000,14000,,,
+purify,,to remove dirty or harmful substances from something,净化；使纯净,v,1,0,cet6,10000,11000,d:purified/p:purified/i:purifying/3:purifies,,
+purified,,made clean or pure by removing dirty or harmful substances,净化的；提纯的,adj,1,0,cet6,11000,12000,0:purify,,
+purifying,,removing dirty or harmful substances from something,净化的；提纯的,adj,1,0,cet6,11000,12000,0:purify,,
 expedition,,a journey organized for a particular purpose; a group of people on such a journey,远征；考察队；探险,n,2,0,cet6,9000,10000,,,
 station,,a place or building where a service is based; a space station,站；车站；台；空间站,n,4,1,cet4,700,800,,,
 exploration,,the act of travelling through an area to learn about it,探索；勘探,n,2,0,cet6,6000,6500,,,
